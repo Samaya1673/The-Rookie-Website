@@ -1,388 +1,241 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Neon Snake</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Rookie: A Fan Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #0d0221;
-            color: #fff;
-            font-family: 'Press Start 2P', cursive;
-            overflow: hidden;
-            touch-action: none; /* Prevents unwanted touch behaviors */
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0; /* Slate 200 */
         }
-        #game-container {
-            position: relative;
-            width: 95vw;
-            height: 95vh;
-            max-width: 600px;
-            max-height: 600px;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 3px solid #00f6ff;
-            box-shadow: 0 0 25px #00f6ff, 0 0 10px #00f6ff inset;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
+        .hero-bg {
+            background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 1)), url('https://images.unsplash.com/photo-1605647540924-852290f4b314?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
         }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
+        .card-bg {
+            background-color: #1e293b; /* Slate 800 */
         }
-        #ui-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
+        .btn-primary {
+            background-color: #2563eb; /* Blue 600 */
+            transition: background-color 0.3s ease;
         }
-        #score {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.5em;
-            color: #f0f;
-            text-shadow: 0 0 10px #f0f, 0 0 20px #f0f;
+        .btn-primary:hover {
+            background-color: #1d4ed8; /* Blue 700 */
         }
-        #game-over-modal {
-            display: none; /* Hidden by default */
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(13, 2, 33, 0.8);
-            backdrop-filter: blur(8px);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            pointer-events: all;
-            border: 2px solid #f0f;
-            box-shadow: 0 0 20px #f0f;
+        .character-card:hover .character-info {
+            opacity: 1;
+            transform: translateY(0);
         }
-        #game-over-modal h1 {
-            margin: 0;
-            font-size: 2.5em;
-            color: #ff4757;
-            text-shadow: 0 0 15px #ff4757;
+        .character-info {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
-        #game-over-modal p {
-            font-size: 1.2em;
-            margin: 20px 0;
-            color: #00f6ff;
-            text-shadow: 0 0 10px #00f6ff;
+        .quote-card, .fact-card {
+            border-left: 4px solid #2563eb;
         }
-        #restart-button {
-            padding: 15px 30px;
-            font-size: 1em;
-            font-family: 'Press Start 2P', cursive;
-            color: #fff;
-            background: linear-gradient(45deg, #f0f, #00f6ff);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px #f0f;
-        }
-        #restart-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 25px #00f6ff;
+        .character-card img {
+            height: 450px;
+            object-fit: cover;
+            object-position: top;
         }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
-        <div id="ui-container">
-            <div id="score">SCORE: 0</div>
-            <div id="game-over-modal">
-                <h1>GAME OVER</h1>
-                <p>FINAL SCORE: <span id="final-score">0</span></p>
-                <button id="restart-button">RESTART</button>
+    <!-- Header -->
+    <header class="bg-slate-900 bg-opacity-80 backdrop-blur-sm fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-white">THE ROOKIE</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#about" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
+                        <a href="#characters" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Characters</a>
+                        <a href="#quotes" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Quotes</a>
+                        <a href="#facts" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fun Facts</a>
+                        <a href="#code7" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Code 7</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score');
-        const gameOverModal = document.getElementById('game-over-modal');
-        const finalScoreEl = document.getElementById('final-score');
-        const restartButton = document.getElementById('restart-button');
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-bg h-screen flex items-center justify-center text-center">
+            <div class="px-4">
+                <h1 class="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight mb-4">Starting Over Isn't Easy.</h1>
+                <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-300 mb-8">Follow John Nolan as he pursues his dream of being an LAPD officer, navigating the dangerous, humorous, and unpredictable world of a "rookie."</p>
+                <a href="#about" class="btn-primary text-white font-bold py-3 px-8 rounded-lg text-lg uppercase tracking-wider">Go On Patrol</a>
+            </div>
+        </section>
 
-        // --- Game Constants and Variables ---
-        const gridSize = 20;
-        let snake, food, score, direction, changingDirection, gameOver;
-        let gameSpeed = 120; // milliseconds per frame
-        let gameLoopTimeout;
+        <!-- About Section -->
+        <section id="about" class="py-20 sm:py-28 bg-slate-950">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">The Premise</h2>
+                    <p class="mt-4 text-lg text-gray-400">It's never too late for a fresh start.</p>
+                </div>
+                <div class="mt-16 grid md:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <img class="rounded-lg shadow-2xl w-full h-auto object-cover" src="https://www.denofgeek.com/wp-content/uploads/2021/01/The-Rookie-Season-3-Episode-2.jpg?fit=1200%2C675" onerror="this.onerror=null;this.src='https://placehold.co/800x600/1e293b/FFFFFF?text=Image+Not+Found';" alt="John Nolan in uniform">
+                    </div>
+                    <div class="text-gray-300 text-lg space-y-6">
+                        <p>*The Rookie* stars Nathan Fillion as John Nolan, a man in his forties who, after a life-altering incident, decides to move to Los Angeles to become a police officer with the LAPD. As the oldest rookie on the force, he's met with skepticism from both his superiors and fellow officers.</p>
+                        <p>The series chronicles his journey through the ranks, balancing the demanding and dangerous aspects of the job with the challenges of his personal life. Nolan must use his life experience, determination, and sense of humor to keep up with rookies twenty years his junior.</p>
+                        <p>It's a compelling mix of police procedural, character-driven drama, and heartfelt moments, exploring what it means to find your calling later in life.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Characters Section -->
+        <section id="characters" class="py-20 sm:py-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">Mid-Wilshire Division</h2>
+                    <p class="mt-4 text-lg text-gray-400">Meet the officers of the precinct.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Character Card: John Nolan -->
+                    <div class="character-card relative overflow-hidden rounded-lg group">
+                        <img src="https://image.tmdb.org/t/p/w500/9V52PEc62geV6o3K42K2t1i2a0n.jpg" onerror="this.onerror=null;this.src='https://placehold.co/600x450/1e293b/FFFFFF?text=John+Nolan';" alt="John Nolan" class="w-full h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6">
+                            <h3 class="text-2xl font-bold text-white">John Nolan</h3>
+                            <div class="character-info mt-2">
+                                <p class="text-gray-300">The oldest rookie in the LAPD, determined to make his second chance count.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Character Card: Tim Bradford -->
+                    <div class="character-card relative overflow-hidden rounded-lg group">
+                        <img src="https://image.tmdb.org/t/p/w500/p3Yd1DRiL1a22y06tSKejA6zJ5.jpg" onerror="this.onerror=null;this.src='https://placehold.co/600x450/1e293b/FFFFFF?text=Tim+Bradford';" alt="Tim Bradford" class="w-full h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6">
+                            <h3 class="text-2xl font-bold text-white">Tim Bradford</h3>
+                            <div class="character-info mt-2">
+                                <p class="text-gray-300">A tough, no-nonsense training officer who pushes his rookies to their limits.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Character Card: Lucy Chen -->
+                    <div class="character-card relative overflow-hidden rounded-lg group">
+                        <img src="https://image.tmdb.org/t/p/w500/yxttQy521tDSaY2yIOyl1gT1a2L.jpg" onerror="this.onerror=null;this.src='https://placehold.co/600x450/1e293b/FFFFFF?text=Lucy+Chen';" alt="Lucy Chen" class="w-full h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6">
+                            <h3 class="text-2xl font-bold text-white">Lucy Chen</h3>
+                            <div class="character-info mt-2">
+                                <p class="text-gray-300">An ambitious and intelligent rookie who constantly strives to prove herself.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Character Card: Angela Lopez -->
+                    <div class="character-card relative overflow-hidden rounded-lg group">
+                        <img src="https://image.tmdb.org/t/p/w500/v1QW7cKE8pWfS65q26t3f4gQ8L.jpg" onerror="this.onerror=null;this.src='https://placehold.co/600x450/1e293b/FFFFFF?text=Angela+Lopez';" alt="Angela Lopez" class="w-full h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6">
+                            <h3 class="text-2xl font-bold text-white">Angela Lopez</h3>
+                            <div class="character-info mt-2">
+                                <p class="text-gray-300">A sharp and dedicated training officer who rises to become a skilled detective.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Character Card: Wade Grey -->
+                    <div class="character-card relative overflow-hidden rounded-lg group">
+                        <img src="https://image.tmdb.org/t/p/w500/3qgYCnA232aSqjS2yqf2IqJ2oZ5.jpg" onerror="this.onerror=null;this.src='https://placehold.co/600x450/1e293b/FFFFFF?text=Wade+Grey';" alt="Wade Grey" class="w-full h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6">
+                            <h3 class="text-2xl font-bold text-white">Wade Grey</h3>
+                            <div class="character-info mt-2">
+                                <p class="text-gray-300">The watch commander of the Mid-Wilshire station, who is skeptical of Nolan but fair.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Character Card: Nyla Harper -->
+                    <div class="character-card relative overflow-hidden rounded-lg group">
+                        <img src="https://image.tmdb.org/t/p/w500/AvL2ba2C22L4r2T23gCqfI63a5.jpg" onerror="this.onerror=null;this.src='https://placehold.co/600x450/1e293b/FFFFFF?text=Nyla+Harper';" alt="Nyla Harper" class="w-full h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6">
+                            <h3 class="text-2xl font-bold text-white">Nyla Harper</h3>
+                            <div class="character-info mt-2">
+                                <p class="text-gray-300">A seasoned undercover detective turned training officer with a cynical worldview.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-        // Touch handling variables
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchEndX = 0;
-        let touchEndY = 0;
+        <!-- Quotes Section -->
+        <section id="quotes" class="py-20 sm:py-28 bg-slate-950">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">Memorable Quotes</h2>
+                    <p class="mt-4 text-lg text-gray-400">Words to live by from the Mid-Wilshire Division.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="quote-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">"Control your heart rate. It'll keep you from making a mistake."</p>
+                        <cite class="block text-right mt-4 not-italic text-gray-400">- Tim Bradford</cite>
+                    </div>
+                    <div class="quote-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">"Talk is cheap. Action is everything."</p>
+                        <cite class="block text-right mt-4 not-italic text-gray-400">- Wade Grey</cite>
+                    </div>
+                    <div class="quote-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">"Sometimes the people you'd take a bullet for are the ones behind the trigger."</p>
+                        <cite class="block text-right mt-4 not-italic text-gray-400">- John Nolan</cite>
+                    </div>
+                    <div class="quote-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">"There's no version of this that's not gonna hurt."</p>
+                        <cite class="block text-right mt-4 not-italic text-gray-400">- Nyla Harper</cite>
+                    </div>
+                    <div class="quote-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">"You can't get so focused on the 'what ifs' that you forget the 'what is'."</p>
+                        <cite class="block text-right mt-4 not-italic text-gray-400">- Lucy Chen</cite>
+                    </div>
+                    <div class="quote-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">"We don't get to choose when the job gets hard."</p>
+                        <cite class="block text-right mt-4 not-italic text-gray-400">- Angela Lopez</cite>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        // --- Game Setup ---
-        function setup() {
-            const container = document.getElementById('game-container');
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
-
-            snake = [
-                { x: Math.floor(canvas.width / 2 / gridSize) * gridSize, y: Math.floor(canvas.height / 2 / gridSize) * gridSize },
-                { x: Math.floor(canvas.width / 2 / gridSize) * gridSize - gridSize, y: Math.floor(canvas.height / 2 / gridSize) * gridSize },
-                { x: Math.floor(canvas.width / 2 / gridSize) * gridSize - 2 * gridSize, y: Math.floor(canvas.height / 2 / gridSize) * gridSize }
-            ];
-            score = 0;
-            direction = { x: gridSize, y: 0 }; // Start moving right
-            changingDirection = false;
-            gameOver = false;
-            
-            gameOverModal.style.display = 'none';
-            scoreEl.textContent = `SCORE: 0`;
-
-            placeFood();
-            
-            if (gameLoopTimeout) {
-                clearTimeout(gameLoopTimeout);
-            }
-            gameLoop();
-        }
-
-        // --- Main Game Loop ---
-        function gameLoop() {
-            if (gameOver) {
-                showGameOver();
-                return;
-            }
-            
-            changingDirection = false;
-            gameLoopTimeout = setTimeout(() => {
-                update();
-                draw();
-                requestAnimationFrame(gameLoop);
-            }, gameSpeed);
-        }
-
-        // --- Update Game State ---
-        function update() {
-            const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-
-            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
-                gameOver = true;
-                return;
-            }
-
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    gameOver = true;
-                    return;
-                }
-            }
-
-            snake.unshift(head);
-
-            if (head.x === food.x && head.y === food.y) {
-                score += 10;
-                scoreEl.textContent = `SCORE: ${score}`;
-                placeFood();
-            } else {
-                snake.pop();
-            }
-        }
+        <!-- Fun Facts Section -->
+        <section id="facts" class="py-20 sm:py-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">Did You Know?</h2>
+                    <p class="mt-4 text-lg text-gray-400">Behind-the-scenes trivia for true fans.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="fact-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">The show is inspired by the true story of William "Bill" Norcross, who joined the LAPD in his mid-40s and is an executive producer on the show.</p>
+                    </div>
+                    <div class="fact-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">Nathan Fillion (John Nolan) is known for doing many of his own stunts, adding a layer of realism to his character's action sequences.</p>
+                    </div>
+                    <div class="fact-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">The show has a spin-off called *The Rookie: Feds*, starring Niecy Nash-Betts as Simone Clark, the oldest rookie in the FBI Academy.</p>
+                    </div>
+                    <div class="fact-card card-bg rounded-lg p-6">
+                        <p class="text-lg text-gray-300">Real police officers serve as consultants on set to ensure the authenticity of police tactics, radio chatter, and procedures depicted in the series.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-        // --- Place Food Randomly ---
-        function placeFood() {
-            food = {
-                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
-            };
-            snake.forEach(part => {
-                if (part.x === food.x && part.y === food.y) {
-                    placeFood();
-                }
-            });
-        }
-        
-        // --- Helper function to draw a star ---
-        function drawStar(cx, cy, spikes, outerRadius, innerRadius, color) {
-            let rot = Math.PI / 2 * 3;
-            let x = cx;
-            let y = cy;
-            let step = Math.PI / spikes;
-
-            ctx.beginPath();
-            ctx.moveTo(cx, cy - outerRadius);
-            for (let i = 0; i < spikes; i++) {
-                x = cx + Math.cos(rot) * outerRadius;
-                y = cy + Math.sin(rot) * outerRadius;
-                ctx.lineTo(x, y);
-                rot += step;
-
-                x = cx + Math.cos(rot) * innerRadius;
-                y = cy + Math.sin(rot) * innerRadius;
-                ctx.lineTo(x, y);
-                rot += step;
-            }
-            ctx.lineTo(cx, cy - outerRadius);
-            ctx.closePath();
-            
-            ctx.fillStyle = color;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 20;
-            ctx.fill();
-        }
-
-        // --- Draw Everything ---
-        function draw() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw snake
-            snake.forEach((part, index) => {
-                const centerX = part.x + gridSize / 2;
-                const centerY = part.y + gridSize / 2;
-                const radius = gridSize / 2;
-
-                ctx.fillStyle = index === 0 ? '#00f6ff' : '#0af';
-                ctx.shadowColor = index === 0 ? '#00f6ff' : '#0af';
-                ctx.shadowBlur = 15;
-
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                // Draw eyes on the head
-                if (index === 0) {
-                    ctx.shadowBlur = 0; // No glow for the eyes
-                    ctx.fillStyle = '#0d0221'; // Dark eye color
-                    let eyeRadius = 2.5;
-                    let eyeOffsetX = 0;
-                    let eyeOffsetY = 0;
-
-                    if (direction.x > 0) eyeOffsetX = 5; // Moving right
-                    if (direction.x < 0) eyeOffsetX = -5; // Moving left
-                    if (direction.y > 0) eyeOffsetY = 5; // Moving down
-                    if (direction.y < 0) eyeOffsetY = -5; // Moving up
-                    
-                    if (direction.x !== 0) { // Horizontal movement
-                        ctx.beginPath();
-                        ctx.arc(centerX + eyeOffsetX, centerY - 5, eyeRadius, 0, 2 * Math.PI);
-                        ctx.fill();
-                        ctx.beginPath();
-                        ctx.arc(centerX + eyeOffsetX, centerY + 5, eyeRadius, 0, 2 * Math.PI);
-                        ctx.fill();
-                    } else { // Vertical movement
-                        ctx.beginPath();
-                        ctx.arc(centerX - 5, centerY + eyeOffsetY, eyeRadius, 0, 2 * Math.PI);
-                        ctx.fill();
-                        ctx.beginPath();
-                        ctx.arc(centerX + 5, centerY + eyeOffsetY, eyeRadius, 0, 2 * Math.PI);
-                        ctx.fill();
-                    }
-                }
-            });
-
-            // Draw food
-            drawStar(food.x + gridSize / 2, food.y + gridSize / 2, 5, gridSize / 2, gridSize / 4, '#f0f');
-            
-            ctx.shadowBlur = 0;
-        }
-        
-        // --- Show Game Over Screen ---
-        function showGameOver() {
-            finalScoreEl.textContent = score;
-            gameOverModal.style.display = 'flex';
-        }
-
-        // --- Input Handling ---
-        function handleKeyDown(e) {
-            if (changingDirection) return;
-            changingDirection = true;
-
-            const goingUp = direction.y === -gridSize;
-            const goingDown = direction.y === gridSize;
-            const goingRight = direction.x === gridSize;
-            const goingLeft = direction.x === -gridSize;
-
-            if ((e.key === 'ArrowLeft' || e.key === 'a') && !goingRight) {
-                direction = { x: -gridSize, y: 0 };
-            } else if ((e.key === 'ArrowUp' || e.key === 'w') && !goingDown) {
-                direction = { x: 0, y: -gridSize };
-            } else if ((e.key === 'ArrowRight' || e.key === 'd') && !goingLeft) {
-                direction = { x: gridSize, y: 0 };
-            } else if ((e.key === 'ArrowDown' || e.key === 's') && !goingUp) {
-                direction = { x: 0, y: gridSize };
-            }
-        }
-        
-        function handleTouchStart(e) {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }
-
-        function handleTouchEnd(e) {
-            touchEndX = e.changedTouches[0].clientX;
-            touchEndY = e.changedTouches[0].clientY;
-            handleSwipe();
-        }
-        
-        function handleSwipe() {
-            if (changingDirection) return;
-            
-            const dx = touchEndX - touchStartX;
-            const dy = touchEndY - touchStartY;
-            
-            if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
-
-            changingDirection = true;
-
-            const goingUp = direction.y === -gridSize;
-            const goingDown = direction.y === gridSize;
-            const goingRight = direction.x === gridSize;
-            const goingLeft = direction.x === -gridSize;
-
-            if (Math.abs(dx) > Math.abs(dy)) {
-                if (dx > 0 && !goingLeft) {
-                    direction = { x: gridSize, y: 0 };
-                } else if (dx < 0 && !goingRight) {
-                    direction = { x: -gridSize, y: 0 };
-                }
-            } else {
-                if (dy > 0 && !goingUp) {
-                    direction = { x: 0, y: gridSize };
-                } else if (dy < 0 && !goingDown) {
-                    direction = { x: 0, y: -gridSize };
-                }
-            }
-        }
-
-        // --- Initialize ---
-        window.addEventListener('keydown', handleKeyDown);
-        canvas.addEventListener('touchstart', handleTouchStart);
-        canvas.addEventListener('touchend', handleTouchEnd);
-        restartButton.addEventListener('click', setup);
-        window.addEventListener('resize', setup);
-        
-        window.onload = setup;
-
-    </script>
-</body>
-</html>
+        <!-- Code 7 Section -->
+        <section id="code7" class="py-20 sm:py-28 bg-slate-950 text-center">
+             <
